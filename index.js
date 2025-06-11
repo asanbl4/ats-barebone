@@ -15,12 +15,12 @@ app.post('/', async (req, res) => {
                 (segment.words || []).map(wordObject => wordObject.word)
             );
 
-            const fullTranscript = allWordsArray.join('——');
+            const fullTranscript = allWordsArray.join('');
 
 
             console.log("Successfully extracted transcript:");
             console.log(fullTranscript);
-
+            
             return res.status(200).json({
                 message: "Transcript processed successfully.",
                 transcript: fullTranscript

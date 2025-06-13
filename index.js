@@ -9,6 +9,7 @@ app.use(express.json());
 app.post('/', async (req, res) => {
     if (req.body.event === "complete") {
         try {
+            console.log(req.body.data);
             const transcriptSegments = req.body.data?.transcript || [];
 
             const allWordsArray = transcriptSegments.flatMap(segment =>

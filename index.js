@@ -37,8 +37,8 @@ app.post('/', async (req, res) => {
 });
 
 app.post('/calendar', async (req, res) => {
-    console.log(res.headers);
-    console.log(res.body);
+    console.log(req.headers);
+    console.log(req.body);
 })
 
 // Vercel doesn't use app.listen(), but it's good for local development

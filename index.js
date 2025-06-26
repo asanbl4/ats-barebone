@@ -36,6 +36,11 @@ app.post('/', async (req, res) => {
     res.status(200).json({ message: "Event was not 'complete', no action taken." });
 });
 
+app.post('/calendar', async (req, res) => {
+    console.log(res.headers);
+    console.log(res.body);
+})
+
 // Vercel doesn't use app.listen(), but it's good for local development
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {

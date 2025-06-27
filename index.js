@@ -1,3 +1,7 @@
+const s3Service = require('./service');
+const axios = require('axios');
+const { v4: uuidv4 } = require('uuid');
+
 const express = require('express');
 const app = express();
 
@@ -7,11 +11,15 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 app.post('/', async (req, res) => {
+    // Check if the event has finished
     if (req.body.event === "complete") {
         try {
-            console.log(req.body.data);
+            const zoomBotId = req.body.bot_id;
             const transcriptSegments = req.body.data?.transcript || [];
 
+            const botMp4Url = req.body.data?.mp4 || "";
+
+            // get full transcript
             const allWordsArray = transcriptSegments.flatMap(segment =>
                 (segment.words || []).map(wordObject => wordObject.word)
             );
@@ -21,10 +29,31 @@ app.post('/', async (req, res) => {
 
             console.log("Successfully extracted transcript:");
             console.log(fullTranscript);
-            
+
+            // download a video from the link and upload to our s3
+            const response = await axios.get(botMp4Url, {
+                responseType: 'arraybuffer'
+            });
+            const videoBuffer = Buffer.from(response.data, 'binary');
+            const uniqueFileName = `${uuidv4()}.mp4`;
+            const meetingVideoKey = `notetaker/${uniqueFileName}`;
+            await s3Service.uploadFile(videoBuffer, 'note-taker.mp4', meetingVideoKey, false);
+
+            // // generate note
+            // const assessment = Assessment.findOne({zoomBotId: zoomBotId});
+            // const note = await generateNoteSummary(fullTranscript, assessment.roleName, assessment.roleDescription);
+            //
+            // UserMeetingEvent.findOneAndUpdate({ zoomBotId: zoomBotId }, {
+            //     $set: {
+            //         note: note,
+            //         meetingVideoKey: meetingVideoKey,
+            //     }
+            // });
+
             return res.status(200).json({
-                message: "Transcript processed successfully.",
-                transcript: fullTranscript
+                message: "video uploaded successfully.",
+                transcript: fullTranscript,
+                meetingVideoKey: meetingVideoKey,
             });
 
         } catch (error) {

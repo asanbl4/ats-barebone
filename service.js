@@ -48,6 +48,7 @@ const mimeTypes = {
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 };
 
+// gg
 class S3Service {
     async uploadFile(fileBuffer, originalName, s3Key = null, isPublic = false) { // Added default for isPublic
         const fileExt = path.extname(originalName);
